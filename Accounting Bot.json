@@ -1,0 +1,1677 @@
+{
+  "name": "Accounting Draft",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1056,
+        1360
+      ],
+      "id": "87ec2e46-2fee-48c8-babf-31346358939f",
+      "name": "Telegram Trigger",
+      "webhookId": "9b9a5e5c-a562-4704-aed5-062137318f68",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "25bae4e2-2948-4e5e-a0d4-beb7d8cd74bf"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9213f81e-676d-46e9-8f46-d307869e12f7",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a553b440-e518-4c21-b1ad-9a04605c61de",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -864,
+        1344
+      ],
+      "id": "0a456556-02bb-4460-bef8-0dba297a844d",
+      "name": "Message Type Routing"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -368,
+        1088
+      ],
+      "id": "03d10bc2-e46b-4813-880d-d3c5c45029a7",
+      "name": "Get a file1",
+      "webhookId": "aacb34d5-9381-4ae2-84e0-758f86bd7bd0",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -160,
+        1088
+      ],
+      "id": "b16b6b82-478e-4e76-adff-f8e6c55c91c6",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "openAiApi": {
+          "id": "fl6sxvn5M1m7Za9O",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "56337e73-09f3-4ad1-9186-df98f5c44ed8",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "38264fb0-8d70-4eb4-b7bd-21c9bbd7d440",
+              "name": "Source",
+              "value": "Voice Entry",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        1088
+      ],
+      "id": "5e9ce458-af82-4aef-a073-735ac03c6ad6",
+      "name": "Maps Audio Output"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6abf9e8c-9e56-47ee-994f-d5fa46da278d",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "efb83c03-b75c-4ad9-8658-6766e03b13fe",
+              "name": "Source",
+              "value": "Manual Entry",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        1360
+      ],
+      "id": "9919b81a-e55a-4810-829d-c91a7e47cf7d",
+      "name": "Maps the Text"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55b7027a-08f3-4fda-ad8a-b23ed6d694ca",
+              "name": "text",
+              "value": "={{ $('Analyze image1').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "183e1c4a-6afa-41ea-9cad-b4fbd102e83f",
+              "name": "entryFor",
+              "value": "={{ $json.data.approved ? \"EXPENSE\" : \"INCOME\" }}\n",
+              "type": "string"
+            },
+            {
+              "id": "a25135e6-8f48-4f3c-a9da-faf780885f14",
+              "name": "Source",
+              "value": "Screenshot",
+              "type": "string"
+            },
+            {
+              "id": "c376a26f-472c-4105-9c16-3b2cd47c9840",
+              "name": "Attachment Link",
+              "value": "={{ $items('Upload file')[0].json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        1600
+      ],
+      "id": "2b31852b-719a-4a83-a9ae-f6c1767fda2f",
+      "name": "Maps Image Output"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "message": "=Confirm whether income or expense.",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "EXPENSE",
+            "disapproveLabel": "INCOME"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        1600
+      ],
+      "id": "4412d4d6-ac3e-4033-8dfa-daff061063a5",
+      "name": "Send message and wait for response",
+      "webhookId": "f5ef3c1d-1418-4b1a-b5fb-5780b7499239",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "Provide the text in the image.\nDon't include any extra text.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -368,
+        1520
+      ],
+      "id": "12e10a3e-3319-43d5-a0f2-91009cb09dd1",
+      "name": "Analyze image1",
+      "credentials": {
+        "openAiApi": {
+          "id": "fl6sxvn5M1m7Za9O",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[3].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -608,
+        1600
+      ],
+      "id": "66e47977-e73b-434e-92ed-8ef6931d9d4d",
+      "name": "Get a file",
+      "webhookId": "aacb34d5-9381-4ae2-84e0-758f86bd7bd0",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n  \"role\": \"user\",\n  \"entryType\": \"{{ $json.entryFor }}\",\n  \"content\": \"{{ $json.text }}\",\n  \"source\": \"{{ $json.Source }}\",\n  \"link\": \"{{ $json['Attachment Link'] }}\"\n}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a STRICT JSON generator for accounting data extraction.\n\nYour ONLY task is to analyze the given input and return ONE valid JSON object.\nNever include explanations, markdown, comments, or extra text.\nNever refuse. Never ask questions.\n\n##INTENT DETECTION\nFirst, decide the intent of the message.\n\nIf the message:\n- contains accounting-related information such as income, expense, payment, transfer, amount, receipt, invoice, bank, card, cash, SADAD, or transaction\nOR\n- is a continuation of a previous accounting entry where the last output had status \"Pending\"\n  → proceed with accounting extraction.\n\nIf the message is NOT accounting-related AND NOT a continuation of a Pending entry,\nreturn ONLY with the following JSON and stop:\n{\n  \"status\": \"Invalid\",\n  \"message\": \"Dear Discover Arabia user, this assistant is only for accounting entries. Please provide income or expense details.\"\n}\n\nGENERAL RULES:\n- Output MUST be valid JSON only.\n- If a field is missing or cannot be confidently determined, set it to null.\n- Do NOT invent or guess values.\n- Dates must be in DD-MM-YYYY format.\n- Do grammatical capitalization.\n- Amount must be a number (no currency symbols).\n- Default currency is \"QAR\" if not explicitly provided.\n- Decide entryType strictly based on money flow if not mentioned:\n  - Money coming IN → \"INCOME\"\n  - Money going OUT → \"EXPENSE\"\n  - If unclear → null\n\nStatus Logic (Pending/Confirmed):\n- Always return \"status\": \"Pending\" for newly extracted data.\n- If the last output had status: \"Pending\", handle this first:\n  - If the user confirms (e.g., “Yes,” “Correct,” “Confirm,” “Proceed,” 👍,\"okay\"):\n    → Skip extraction, finalize previous data and set status \"Confirmed\".\n  - If the user makes corrections or adds data:\n    → Re-extract from the new message, replacing corrected values, then continue normally.\n\n====================\nREQUIRED JSON FORMAT\n====================\n\n{\n  \"status\": \"Pending\" | \"Confirmed\",\n  \"entryType\": \"INCOME\" | \"EXPENSE\" | null,\n\n  \"date\": \"{{ DateTime.now().format('dd/MM/yyyy') }}\",\n\n  \"category\": string | null,\n  \"party\": string | null,\n\n  \"amount\": number | null,\n  \"currency\": \"QAR\",\n\n  \"paymentMethod\": \"Cash\" | \"Bank Transfer\" | \"Card\" | \"Online\" | \"Other\" | null,\n  \"transactionType\": \"Transfer In\" | \"Transfer Out\" | \"Cash\" | \"POS\" | \"Online Payment\" | \"Other\" | null,\n\n  \"referenceNumber\": string | null,\n\n  \"note\": string | null,\n\n  \"source\": \"Manual\" | \"Bank Screenshot OCR\" | \"Invoice OCR\" | \"SADAD\" | \"SADAD Fees/Refunds\" | null,\n  \"link\": null | the one received\n}\n\n====================\nFIELD RULES\n====================\n- date:\n  - Use today's date: {{ DateTime.now().format('dd/MM/yyyy') }}\n\n- category:\n  - e.g. service, tour, desert safari, kayaking, activity, fuel, supplies, maintenance.\n\n- party:\n  - name of the client/customer/payer/payee and if extra details present enclose them in bracket next to the name.\n\n- paymentMethod:\n  - How the payment was made (cash, card, bank, online)\n\n- transactionType:\n  - Nature of the transaction (transfer, POS, cash, online payment)\n\n- referenceNumber:\n  - Bank reference, invoice number, transaction ID if present\n\n- source:\n  - Use value from input if provided: {{ $json.Source }}\n\n\n- Preserve meaningful original text inside \"note\".\n- Do not rephrase names, references, or numbers.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        1360
+      ],
+      "id": "d03e5b6c-bd89-4cfd-8673-4c928aa36604",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "contextWindowLength": 8
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        1584
+      ],
+      "id": "27212082-3669-4497-9527-6cf2245a1e3b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        1584
+      ],
+      "id": "88c975ad-cc13-4d04-8b9b-0811047cc198",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fl6sxvn5M1m7Za9O",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw output from the previous node (AI Agent)\nlet raw = $json[\"output\"];\n\n// Step 1: Remove code fences (```json ... ```)\nraw = raw.replace(/```json/i, \"\").replace(/```/g, \"\");\n\n// Step 2: Clean escaped newlines and extra spaces\nraw = raw.replace(/\\\\n/g, \"\").trim();\n\n// Step 3: Parse the cleaned JSON safely\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  throw new Error(\"Failed to parse AI JSON output: \" + e.message + \"\\nRaw content: \" + raw);\n}\n\n// Step 4: Return structured data for next nodes\nreturn parsed;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        1360
+      ],
+      "id": "2c9a5702-61b2-4860-aa05-89020f91a9d7",
+      "name": "Parses AI Output"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b04e25e8-acb1-4dd4-9281-dcf61db3cf8d",
+                    "leftValue": "={{ $json.status.toLowerCase() }}",
+                    "rightValue": "invalid",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Invalid"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ac6943ed-45da-4feb-a6dc-5631edd0ba3b",
+                    "leftValue": "={{ $json.status.toLowerCase() }}",
+                    "rightValue": "pending",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pending"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "97ff3a37-6e72-4e71-8fbc-7a88fba07976",
+                    "leftValue": "={{ $json.status.toLowerCase() }}",
+                    "rightValue": "confirmed",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Confirmed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        1344
+      ],
+      "id": "e11fc055-1255-4ae6-b337-333e3c7460fc",
+      "name": "Details-based Routing"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=<b>🧾 Please confirm the following accounting entry:</b>\n\n<b>Entry Type:</b> {{ $json.entryType }}\nDate: {{ $json.date }}\n\nCategory: {{ $json.category }}\n\nClient/Customer: {{ $json.party }}\n\nAmount: {{ $json.amount }} {{ $json.currency }}\n\nPayment method: {{ $json.paymentMethod }}\nTransaction Type: {{ $json.transactionType }}\n\nRefefrence Number: {{ $json.referenceNumber }}\n\nNote: {{ $json.note }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        1360
+      ],
+      "id": "fd130fe1-eb39-4710-bf68-41f85363c02a",
+      "name": "Send a text message1",
+      "webhookId": "1f617911-aa36-4b81-8f41-713eec1bab6b",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.entryType.toLowerCase() }}",
+                    "rightValue": "income",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "69c841c8-9425-46bc-b69c-8afa60a4daae"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Income"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cfcf37d3-7cf1-4a5f-a218-509bf4b88302",
+                    "leftValue": "={{ $json.entryType.toLowerCase() }}",
+                    "rightValue": "expense",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Expense"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1360,
+        1680
+      ],
+      "id": "cb5adf5a-486b-429a-9e9b-3f3474e5aa37",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 384384684,
+          "mode": "list",
+          "cachedResultName": "Expense",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=384384684"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client Name ": "={{ $('Switch').item.json.party }}",
+            "Amount": "={{ $('Switch').item.json.amount }}",
+            "Currency": "={{ $('Switch').item.json.currency }}",
+            "Payment Method": "={{ $('Switch').item.json.paymentMethod }}",
+            "Transaction Type": "={{ $('Switch').item.json.transactionType }}",
+            "Reference Number": "={{ $('Switch').item.json.referenceNumber }}",
+            "Notes": "={{ $('Switch').item.json.note }}",
+            "Source": "={{ $('Switch').item.json.source }}",
+            "Entered By": "={{ $('Telegram Trigger').item.json.message.from.first_name }}",
+            "Created At": "={{ DateTime.now().format('HH:mm:ss') }}",
+            "Status": "Confirmed",
+            "Date": "={{ $('Switch').item.json.date }}",
+            "Expense Type": "={{ $('Switch').item.json.category }}",
+            "Expense ID": "=EXP-{{ $json.LastNumber + 1 }}",
+            "Attachment Link": "={{ $('Switch').item.json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Expense ID",
+              "displayName": "Expense ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Expense Type",
+              "displayName": "Expense Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Client Name ",
+              "displayName": "Client Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Currency",
+              "displayName": "Currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Method",
+              "displayName": "Payment Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transaction Type",
+              "displayName": "Transaction Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reference Number",
+              "displayName": "Reference Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Entered By",
+              "displayName": "Entered By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Attachment Link",
+              "displayName": "Attachment Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        1792
+      ],
+      "id": "05893783-ef4a-4aec-b4c5-3bc85f9ab006",
+      "name": "EXPENSE",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Income",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Income Type": "={{ $('Switch').item.json.category }}",
+            "Client Name ": "={{ $('Switch').item.json.party }}",
+            "Amount": "={{ $('Switch').item.json.amount }}",
+            "Currency": "={{ $('Switch').item.json.currency }}",
+            "Payment Method": "={{ $('Switch').item.json.paymentMethod }}",
+            "Transaction Type": "={{ $('Switch').item.json.transactionType }}",
+            "Reference Number": "={{ $('Switch').item.json.referenceNumber }}",
+            "Notes": "={{ $('Switch').item.json.note }}",
+            "Source": "={{ $('Switch').item.json.source }}",
+            "Entered By": "={{ $('Telegram Trigger').item.json.message.from.first_name }}",
+            "Created At": "={{ DateTime.now().format('HH:mm:ss') }}",
+            "Status": "Confirmed",
+            "Date": "={{ $('Switch').item.json.date }}",
+            "Income ID": "=INV-{{ $json.LastNumber + 1}}",
+            "Attachment Link": "={{ $('Switch').item.json.link }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Income ID",
+              "displayName": "Income ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Income Type",
+              "displayName": "Income Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client Name ",
+              "displayName": "Client Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Currency",
+              "displayName": "Currency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment Method",
+              "displayName": "Payment Method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transaction Type",
+              "displayName": "Transaction Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reference Number",
+              "displayName": "Reference Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Entered By",
+              "displayName": "Entered By",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Attachment Link",
+              "displayName": "Attachment Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        1568
+      ],
+      "id": "eab1f1de-f261-46f4-a5dd-d340c730ca21",
+      "name": "INCOME",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=<b>✅ Manual Entry Recorded!</b>\n\n📌 Entry Type: {{ $('Parses AI Output').item.json.entryType }}\n💰 Amount: {{ $json.Amount }} {{ $json.Currency }}\n\n🆔 Income Id: {{ $json['Income ID'] }}\n📂 Category: {{ $json['Income Type'] }}\n\n🔗Reference Number: {{ $json['Reference Number'] }}\n👤Client/Customer Name: {{ $json['Client Name '] }}\n\n👤 Recorded by: {{ $json['Entered By'] }}\n💳 Method: {{ $json['Payment Method'] }}\n💱Transaction Type: {{ $json['Transaction Type'] }}\n\n📝 Note: {{ $json.Notes }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        1568
+      ],
+      "id": "738c3ff5-efd2-4499-adf3-8b2fa29c0858",
+      "name": "Send a text message",
+      "webhookId": "1f617911-aa36-4b81-8f41-713eec1bab6b",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ODI1w1pi8Gf-IeoiM81wPYiKDg01UGY_",
+          "mode": "list",
+          "cachedResultName": "n8n-images",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ODI1w1pi8Gf-IeoiM81wPYiKDg01UGY_"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -368,
+        1696
+      ],
+      "id": "38aca983-4246-4702-8fb0-ae00ca8f50c7",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "rl7ceY2510TeStgB",
+          "name": "SK_Credentials"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -144,
+        1600
+      ],
+      "id": "1f8dedc7-0d48-43e1-9647-6f1c4d312346",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2000099918,
+          "mode": "list",
+          "cachedResultName": "Counters",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=2000099918"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Entry Type",
+              "lookupValue": "INCOME"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        1568
+      ],
+      "id": "f38a5cd0-fc91-4aa4-84f1-57b428a5d8e8",
+      "name": "Get INV Count",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2000099918,
+          "mode": "list",
+          "cachedResultName": "Counters",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=2000099918"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Entry Type",
+              "lookupValue": "EXPENSE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        1792
+      ],
+      "id": "7c16b03d-f330-48be-af3f-631115ae952c",
+      "name": "Get EXP Count",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2000099918,
+          "mode": "list",
+          "cachedResultName": "Counters",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=2000099918"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Entry Type": "={{ $('Get INV Count').item.json['Entry Type'] }}",
+            "LastNumber": "={{ $('Get INV Count').item.json.LastNumber + 1 }}"
+          },
+          "matchingColumns": [
+            "Entry Type"
+          ],
+          "schema": [
+            {
+              "id": "Entry Type",
+              "displayName": "Entry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LastNumber",
+              "displayName": "LastNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2112,
+        1568
+      ],
+      "id": "8a2a92dc-822b-417e-825a-e16028f66fb2",
+      "name": "Update INV Count",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ",
+          "mode": "list",
+          "cachedResultName": "Accounting Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2000099918,
+          "mode": "list",
+          "cachedResultName": "Counters",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UHGvWX38ixAsz-n6ruUEraO0BrP8_9-jicpVy3NB8FQ/edit#gid=2000099918"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Entry Type": "={{ $('Get EXP Count').item.json['Entry Type'] }}",
+            "LastNumber": "={{ $('Get EXP Count').item.json.LastNumber + 1 }}"
+          },
+          "matchingColumns": [
+            "Entry Type"
+          ],
+          "schema": [
+            {
+              "id": "Entry Type",
+              "displayName": "Entry Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LastNumber",
+              "displayName": "LastNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2112,
+        1792
+      ],
+      "id": "4d51061f-ad3d-411d-9e23-b37ecc5696ca",
+      "name": "Update EXP Count",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8PXnzSneUScOqEc2",
+          "name": "sk_credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=<b>✅ Manual Entry Recorded!</b>\n\n📌 Entry Type: {{ $('Parses AI Output').item.json.entryType }}\n💰 Amount: {{ $json.Amount }} {{ $json.Currency }}\n\n🆔 Expense Id: {{ $json['Expense ID'] }}\n📂 Category: {{ $json['Expense Type'] }}\n\n🔗Reference Number: {{ $json['Reference Number'] }}\n👤Client/Customer Name: {{ $json['Client Name '] }}\n\n👤 Recorded by: {{ $json['Entered By'] }}\n💳 Method: {{ $json['Payment Method'] }}\n💱Transaction Type: {{ $json['Transaction Type'] }}\n\n📝 Note: {{ $json.Notes }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        1792
+      ],
+      "id": "2e46cb71-da8f-482c-849c-83e6a16f6d4b",
+      "name": "Send a text message2",
+      "webhookId": "1f617911-aa36-4b81-8f41-713eec1bab6b",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Parses AI Output').item.json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        1088
+      ],
+      "id": "e141545d-344e-45ce-a957-cf4a0634601a",
+      "name": "Send a text message3",
+      "webhookId": "1f617911-aa36-4b81-8f41-713eec1bab6b",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ZnGbYYhlxxHAfaK",
+          "name": "Sk_Quote_Bot"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message Type Routing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Type Routing": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Maps the Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Maps Audio Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maps the Text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "Maps Image Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Analyze image1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maps Audio Output": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maps Image Output": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parses AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parses AI Output": {
+      "main": [
+        [
+          {
+            "node": "Details-based Routing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Details-based Routing": {
+      "main": [
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get INV Count",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get EXP Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXPENSE": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "INCOME": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get INV Count": {
+      "main": [
+        [
+          {
+            "node": "INCOME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get EXP Count": {
+      "main": [
+        [
+          {
+            "node": "EXPENSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update INV Count": {
+      "main": [
+        []
+      ]
+    },
+    "Update EXP Count": {
+      "main": [
+        []
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "Update EXP Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Update INV Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "48e81db3-6f7b-4fe8-84b3-1683b51513e2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "00e2d86f18476fa48a0bbe70e4f34123227f25798f2099883f45d509f13b7aa9"
+  },
+  "id": "htGgw5zpXHKCzarx",
+  "tags": []
+}
